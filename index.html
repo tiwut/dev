@@ -3,478 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linux Web Desktop Ultimate</title>
-
-    <!-- ====================================================== -->
-    <!--  CSS-STILE                                           -->
-    <!-- ====================================================== -->
+    <title>DoNew - Gaming, Hardware & Software</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
         :root {
-            --bg-color: #2e3440; --surface-color: #3b4252; --primary-color: #eceff4;
-            --accent-color: #88c0d0; --title-bar-color: #242933;
-            --font-family: 'Cantarell', 'Segoe UI', Roboto, sans-serif;
-            --mono-font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+            --primary-color: #00ffcc;
+            --secondary-color: #ff00ff;
+            --background-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --dark-grey: #1a1a1a;
         }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: var(--font-family); background-color: var(--bg-color); color: var(--primary-color); user-select: none; }
-        #desktop { width: 100%; height: 100%; background: no-repeat center center/cover; position: relative; transition: background-image 0.5s ease-in-out; }
-        #top-bar { position: fixed; top: 0; left: 0; width: 100%; height: 30px; background-color: rgba(36, 41, 51, 0.8); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; padding: 0 10px; box-sizing: border-box; z-index: 10000; }
-        #top-bar .activities { font-weight: bold; cursor: pointer; padding: 5px 10px; border-radius: 4px; transition: background-color 0.2s; }
-        #top-bar .activities:hover { background-color: rgba(236, 239, 244, 0.1); }
-        #dock { position: fixed; left: 0; top: 30px; height: calc(100% - 30px); background-color: rgba(36, 41, 51, 0.5); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; padding: 10px 5px; box-sizing: border-box; z-index: 9999; }
-        .dock-item { position: relative; margin: 10px 0; cursor: pointer; padding: 8px; border-radius: 8px; transition: background-color 0.2s; }
-        .dock-item:hover { background-color: rgba(255, 255, 255, 0.2); }
-        .dock-item img { width: 48px; height: 48px; display: block; }
-        .dock-item .running-indicator { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background-color: var(--accent-color); border-radius: 50%; display: none; }
-        .dock-item.running .running-indicator { display: block; }
-        .window { position: absolute; min-width: 350px; min-height: 250px; background-color: var(--surface-color); border: 1px solid #1a1a1a; box-shadow: 0 5px 25px rgba(0,0,0,0.6); display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; resize: both; }
-        .window.maximized { top: 30px !important; left: 65px !important; width: calc(100% - 65px) !important; height: calc(100% - 30px) !important; border-radius: 0; resize: none; }
-        .window .title-bar { height: 35px; background-color: var(--title-bar-color); color: var(--primary-color); display: flex; justify-content: space-between; align-items: center; padding-left: 10px; font-weight: bold; cursor: move; flex-shrink: 0; }
-        .title-bar-icon-title { display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .title-bar-icon { width: 20px; height: 20px; flex-shrink: 0; }
-        .window .title-bar-controls button { width: 35px; height: 35px; border: none; background: transparent; font-size: 18px; color: var(--primary-color); cursor: pointer; transition: background-color 0.2s; }
-        .window .title-bar-controls button:hover { background-color: rgba(255, 255, 255, 0.1); }
-        .window .title-bar-controls .close-btn:hover { background-color: #bf616a; }
-        .window .window-content { flex-grow: 1; padding: 0; background-color: var(--bg-color); overflow: auto; display: flex; flex-direction: column; }
-        .terminal { background-color: #2e3440; color: #d8dee9; font-family: var(--mono-font-family); font-size: 14px; padding: 10px; height: 100%; box-sizing: border-box; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; }
-        .terminal-prompt { color: var(--accent-color); }
-        .terminal-input { background: transparent; border: none; color: inherit; font-family: inherit; font-size: inherit; outline: none; width: 100%; }
-        .files-app { display: flex; flex-direction: column; height: 100%; }
-        .files-header { display: flex; align-items: center; padding: 5px 10px; background-color: var(--surface-color); border-bottom: 1px solid var(--title-bar-color); }
-        .files-back-btn { background: none; border: 1px solid #555; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
-        .files-back-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .files-main { flex-grow: 1; padding: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; align-content: flex-start; overflow-y: auto; }
-        .file-item { text-align: center; cursor: pointer; padding: 5px; border-radius: 4px; }
-        .file-item:hover { background-color: rgba(136, 192, 208, 0.2); }
-        .file-item img { width: 48px; height: 48px; }
-        .file-item span { display: block; margin-top: 5px; font-size: 12px; word-wrap: break-word; }
-        #context-menu { position: fixed; z-index: 10001; background-color: var(--title-bar-color); border: 1px solid #1a1a1a; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.5); padding: 5px 0; display: none; }
-        .context-menu-item { padding: 8px 20px; cursor: pointer; color: var(--primary-color); }
-        .context-menu-item:hover { background-color: var(--accent-color); color: #2e3440; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        /* --- Header & Neon-Effekte --- */
+        header {
+            background: var(--dark-grey);
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--primary-color),
+                0 0 30px var(--primary-color),
+                0 0 40px var(--primary-color),
+                0 0 55px var(--primary-color),
+                0 0 75px var(--primary-color);
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                    0 0 4px #fff,
+                    0 0 11px #fff,
+                    0 0 19px #fff,
+                    0 0 40px var(--primary-color),
+                    0 0 80px var(--primary-color),
+                    0 0 90px var(--primary-color),
+                    0 0 100px var(--primary-color),
+                    0 0 150px var(--primary-color);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-left: 25px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .lang-switch button {
+            background: none;
+            border: 1px solid var(--secondary-color);
+            color: var(--secondary-color);
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px var(--secondary-color);
+        }
+
+        .lang-switch button:hover {
+            background: var(--secondary-color);
+            color: var(--background-color);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.9)), url('https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?q=80&w=2067&auto=format&fit=crop') center/cover no-repeat;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to top, var(--background-color), transparent);
+        }
+
+        .hero-content h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 0 0 15px var(--secondary-color);
+        }
+
+        .hero-content p {
+            font-size: 1.5rem;
+            color: var(--text-color);
+        }
+
+        /* --- Sektionen --- */
+        .section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--dark-grey);
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 20px var(--secondary-color);
+        }
+
+        .card h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: var(--dark-grey);
+            color: #aaa;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 2px solid #222;
+        }
+        
+        /* --- Mobile Burger Menu --- */
+        .burger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .burger div {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: absolute;
+                right: 0px;
+                height: 92vh;
+                top: 8vh;
+                background-color: var(--dark-grey);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 50%;
+                transform: translateX(100%);
+                transition: transform 0.5s ease-in;
+            }
+
+            .nav-links li {
+                opacity: 0;
+                margin: 20px 0;
+            }
+
+            .burger {
+                display: block;
+            }
+
+            .nav-active {
+                transform: translateX(0%);
+            }
+            
+            @keyframes navLinkFade {
+                from {
+                    opacity: 0;
+                    transform: translateX(50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0px);
+                }
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-content p {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* --- Sprach-Umschaltung --- */
+        [lang="en"] { display: none; }
+        .en [lang="en"] { display: block; }
+        .en [lang="de"] { display: none; }
+
     </style>
 </head>
 <body>
-    <div id="desktop"></div>
-    <div id="top-bar"><span class="activities">Activities</span><span id="clock"></span></div>
-    <div id="dock">
-        <!-- App Starter werden hier von JS eingefügt -->
-    </div>
-    <div id="context-menu"></div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    <header>
+        <div class="container navbar">
+            <div class="logo">DoNew</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#gaming" lang="de">Gaming</a><a href="#gaming" lang="en">Gaming</a></li>
+                    <li><a href="#hardware" lang="de">Hardware</a><a href="#hardware" lang-en">Hardware</a></li>
+                    <li><a href="#software" lang="de">Software</a><a href="#software" lang="en">Software</a></li>
+                </ul>
+            </nav>
+            <div class="lang-switch">
+                <button id="lang-toggle">EN</button>
+            </div>
+             <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div>
+    </header>
 
-        const desktop = document.getElementById('desktop');
-        const clockElement = document.getElementById('clock');
-        const dock = document.getElementById('dock');
-        const contextMenu = document.getElementById('context-menu');
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 lang="de">Die Zukunft des Gamings.</h1>
+                <h1 lang="en">The Future of Gaming.</h1>
+                <p lang="de">Dein Hub für ehrliche Reviews, krasse Builds und die neuste Software.</p>
+                <p lang-="en">Your hub for honest reviews, insane builds, and the latest software.</p>
+            </div>
+        </section>
 
-        // --- GLOBAL STATE & DATA ---
-        let state = {};
-        const defaultState = {
-            fileSystem: {
-                _type: 'dir', _name: '/',
-                home: { _type: 'dir', _name: 'home', user: {
-                    _type: 'dir', _name: 'user',
-                    Desktop: { _type: 'dir', _name: 'Desktop', 'Welcome.txt': { _type: 'file', _name: 'Welcome.txt', content: 'Willkommen auf deinem neuen Web Desktop!' } },
-                    Documents: { _type: 'dir', _name: 'Documents' },
-                    Downloads: { _type: 'dir', _name: 'Downloads' }
-                }}
-            },
-            installedPackages: new Set(['coreutils']),
-            desktopWallpaper: 'https://source.unsplash.com/random/1920x1080?nordic,nature'
-        };
-
-        const APPS = {
-            files: { title: 'Dateien', icon: 'https://api.iconify.design/ph:folder-fill.svg?color=%2388c0d0' },
-            terminal: { title: 'Terminal', icon: 'https://api.iconify.design/fluent:terminal-24-filled.svg?color=%23eceff4' },
-            editor: { title: 'Texteditor', icon: 'https://api.iconify.design/mdi:text-box.svg?color=%23eceff4' },
-            settings: { title: 'Einstellungen', icon: 'https://api.iconify.design/mdi:cog.svg?color=%23eceff4' }
-        };
-
-        const packageRepository = {
-            'neofetch': { description: 'A command-line system information tool.' },
-            'cowsay': { description: 'Generates ASCII pictures of a cow.' },
-            'curl': { description: 'Tool to transfer data from or to a server.' },
-            'htop': { description: 'An interactive process viewer.' }
-        };
-
-        // --- CORE OS FUNCTIONS ---
-        function saveState() {
-            const stateToSave = { ...state, installedPackages: Array.from(state.installedPackages) };
-            localStorage.setItem('webos_state', JSON.stringify(stateToSave));
-        }
-
-        function loadState() {
-            const savedState = localStorage.getItem('webos_state');
-            if (savedState) {
-                const parsedState = JSON.parse(savedState);
-                state = { ...parsedState, installedPackages: new Set(parsedState.installedPackages) };
-            } else {
-                state = JSON.parse(JSON.stringify(defaultState)); // Deep copy
-                state.installedPackages = new Set(defaultState.installedPackages);
-            }
-            desktop.style.backgroundImage = `url('${state.desktopWallpaper}')`;
-        }
-
-        function updateClock() {
-            clockElement.textContent = new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-        }
-        
-        function getPathObject(path) {
-            const parts = path.split('/').filter(Boolean);
-            let current = state.fileSystem;
-            for (const part of parts) {
-                if (current[part] && current[part]._type === 'dir') current = current[part];
-                else return null;
-            }
-            return current;
-        }
-
-        // --- WINDOW MANAGEMENT ---
-        let openWindows = new Map();
-        let highestZIndex = 1;
-
-        function createWindow(appId, options = {}) {
-            const app = APPS[appId];
-            const windowId = `${appId}-${Date.now()}`;
-
-            const win = document.createElement('div');
-            win.id = windowId;
-            win.className = 'window';
-            win.style.zIndex = ++highestZIndex;
-            win.style.top = `${50 + (openWindows.size * 25) % 200}px`;
-            win.style.left = `${100 + (openWindows.size * 25) % 300}px`;
-
-            win.innerHTML = `
-                <div class="title-bar">
-                    <div class="title-bar-icon-title">
-                        <img src="${app.icon}" class="title-bar-icon">
-                        <span class="title">${options.title || app.title}</span>
+        <section id="gaming" class="section">
+            <div class="container">
+                <h2 class="section-title" lang="de">Gaming</h2>
+                <h2 class="section-title" lang="en">Gaming</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3 lang="de">Neueste Game-Reviews</h3>
+                        <h3 lang="en">Latest Game Reviews</h3>
+                        <p lang="de">Schonungslose und detaillierte Analysen der heißesten Titel. Kein Hype, nur Fakten.</p>
+                        <p lang="en">Unfiltered and detailed analysis of the hottest titles. No hype, just facts.</p>
                     </div>
-                    <div class="title-bar-controls">
-                        <button class="minimize-btn">_</button>
-                        <button class="maximize-btn">□</button>
-                        <button class="close-btn">×</button>
+                    <div class="card">
+                        <h3 lang="de">Gaming-Guides</h3>
+                        <h3 lang="en">Gaming Guides</h3>
+                        <p lang="de">Vom Anfänger zum Profi. Hier findest du die besten Strategien und Taktiken.</p>
+                        <p lang="en">From beginner to pro. Find the best strategies and tactics here.</p>
+                    </div>
+                    <div class="card">
+                        <h3 lang="de">Live-Streams</h3>
+                        <h3 lang="en">Live Streams</h3>
+                        <p lang="de">Verpasse keine Action! Sei live dabei, wenn wir neue Welten erkunden.</p>
+                        <p lang="en">Don't miss the action! Join us live as we explore new worlds.</p>
                     </div>
                 </div>
-                <div class="window-content"></div>`;
-            desktop.appendChild(win);
+            </div>
+        </section>
 
-            win.addEventListener('mousedown', () => win.style.zIndex = ++highestZIndex);
-            win.querySelector('.close-btn').addEventListener('click', () => closeWindow(windowId));
-            win.querySelector('.minimize-btn').addEventListener('click', () => minimizeWindow(windowId));
-            win.querySelector('.maximize-btn').addEventListener('click', () => maximizeWindow(windowId));
-            makeDraggable(win);
-            
-            const contentArea = win.querySelector('.window-content');
-            loadAppContent(appId, contentArea, win, options);
-            
-            openWindows.set(windowId, win);
-            updateDockIndicators();
-        }
+        <section id="hardware" class="section" style="background-color: var(--dark-grey);">
+            <div class="container">
+                <h2 class="section-title" lang="de">Hardware</h2>
+                <h2 class="section-title" lang="en">Hardware</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3 lang="de">PC-Builds des Monats</h3>
+                        <h3 lang="en">PC Builds of the Month</h3>
+                        <p lang="de">Extreme Leistung trifft auf atemberaubendes Design. Inspiration für dein nächstes Rig.</p>
+                        <p lang="en">Extreme performance meets stunning design. Inspiration for your next rig.</p>
+                    </div>
+                    <div class="card">
+                        <h3 lang="de">Komponenten-Tests</h3>
+                        <h3 lang="en">Component Reviews</h3>
+                        <p lang="de">Grafikkarten, CPUs, SSDs – Wir jagen alles durch unsere Benchmarks.</p>
+                        <p lang="en">Graphics cards, CPUs, SSDs - We put everything through our benchmarks.</p>
+                    </div>
+                    <div class="card">
+                        <h3 lang="de">Tech-News</h3>
+                        <h3 lang="en">Tech News</h3>
+                        <p lang="de">Was gibt es Neues in der Welt der Hardware? Hier erfährst du es zuerst.</p>
+                        <p lang="en">What's new in the world of hardware? You'll hear it here first.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        function closeWindow(windowId) {
-            openWindows.get(windowId)?.remove();
-            openWindows.delete(windowId);
-            updateDockIndicators();
-        }
+        <section id="software" class="section">
+            <div class="container">
+                <h2 class="section-title" lang="de">Software</h2>
+                <h2 class="section-title" lang="en">Software</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3 lang="de">Must-Have Tools</h3>
+                        <h3 lang="en">Must-Have Tools</h3>
+                        <p lang="de">Diese Programme optimieren dein Gaming-Erlebnis und deine Produktivität.</p>
+                        <p lang="en">These programs will optimize your gaming experience and productivity.</p>
+                    </div>
+                    <div class="card">
+                        <h3 lang="de">Software-Tipps & Tricks</h3>
+                        <h3 lang="en">Software Tips & Tricks</h3>
+                        <p lang="de">Entdecke versteckte Features und hole das Maximum aus deiner Software heraus.</p>
+                        <p lang="en">Discover hidden features and get the most out of your software.</p>
+                    </div>
+                     <div class="card">
+                        <h3 lang="de">Sicherheits-Updates</h3>
+                        <h3 lang="en">Security Updates</h3>
+                        <p lang="de">Bleib geschützt. Wir informieren dich über wichtige Updates und Bedrohungen.</p>
+                        <p lang="en">Stay protected. We inform you about important updates and threats.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-        function minimizeWindow(windowId) {
-            const win = openWindows.get(windowId);
-            if (win) {
-                win.style.display = 'none';
-                updateDockIndicators();
-            }
-        }
-        
-        function restoreWindow(appId) {
-            let windowToRestore = null;
-            for (const [id, win] of openWindows.entries()) {
-                if (id.startsWith(appId) && win.style.display === 'none') {
-                    windowToRestore = win;
-                    break; // restore one at a time
-                }
-            }
-            if(windowToRestore) {
-                windowToRestore.style.display = 'flex';
-                windowToRestore.style.zIndex = ++highestZIndex;
-            }
-        }
-        
-        function maximizeWindow(windowId) {
-            const win = openWindows.get(windowId);
-            win.classList.toggle('maximized');
-            // Store original dimensions if not already stored
-            if (win.classList.contains('maximized') && !win.dataset.oldW) {
-                win.dataset.oldW = win.style.width;
-                win.dataset.oldH = win.style.height;
-                win.dataset.oldT = win.style.top;
-                win.dataset.oldL = win.style.left;
-            } else { // Restore
-                win.style.width = win.dataset.oldW;
-                win.style.height = win.dataset.oldH;
-                win.style.top = win.dataset.oldT;
-                win.style.left = win.dataset.oldL;
-            }
-        }
+    <footer>
+        <div class="container">
+            <p lang="de">&copy; 2025 DoNew. Alle Rechte vorbehalten.</p>
+            <p lang="en">&copy; 2025 DoNew. All rights reserved.</p>
+        </div>
+    </footer>
 
-        function makeDraggable(element) {
-            const titleBar = element.querySelector('.title-bar');
-            titleBar.onmousedown = e => {
-                if (e.target.tagName === 'BUTTON' || element.classList.contains('maximized')) return;
-                let offsetX = e.clientX - element.offsetLeft;
-                let offsetY = e.clientY - element.offsetTop;
-                document.onmousemove = e => {
-                    element.style.left = `${e.clientX - offsetX}px`;
-                    element.style.top = `${e.clientY - offsetY}px`;
-                };
-                document.onmouseup = () => document.onmousemove = document.onmouseup = null;
-            };
-        }
+    <script>
+        const navSlide = () => {
+            const burger = document.querySelector('.burger');
+            const nav = document.querySelector('.nav-links');
+            const navLinks = document.querySelectorAll('.nav-links li');
 
-        // --- DOCK MANAGEMENT ---
-        function initializeDock() {
-            dock.innerHTML = '';
-            for (const appId in APPS) {
-                const app = APPS[appId];
-                const dockItem = document.createElement('div');
-                dockItem.className = 'dock-item';
-                dockItem.dataset.app = appId;
-                dockItem.innerHTML = `<img src="${app.icon}" alt="${app.title}"><div class="running-indicator"></div>`;
-                dockItem.onclick = () => {
-                    const isRunning = Array.from(openWindows.keys()).some(id => id.startsWith(appId));
-                    const isMinimized = Array.from(openWindows.values()).some(win => win.id.startsWith(appId) && win.style.display === 'none');
-                    
-                    if (isRunning) {
-                         if(isMinimized) restoreWindow(appId);
-                         else { // bring to front
-                            for (const [id, win] of openWindows.entries()) {
-                                if (id.startsWith(appId)) win.style.zIndex = ++highestZIndex;
-                            }
-                         }
+            burger.addEventListener('click', () => {
+                // Toggle Nav
+                nav.classList.toggle('nav-active');
+
+                // Animate Links
+                navLinks.forEach((link, index) => {
+                    if (link.style.animation) {
+                        link.style.animation = '';
                     } else {
-                        createWindow(appId);
+                        link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
                     }
-                };
-                dock.appendChild(dockItem);
-            }
-        }
-
-        function updateDockIndicators() {
-            document.querySelectorAll('.dock-item').forEach(item => {
-                const appId = item.dataset.app;
-                const isRunning = Array.from(openWindows.keys()).some(id => id.startsWith(appId));
-                item.classList.toggle('running', isRunning);
+                });
             });
         }
-        
-        // --- CONTEXT MENU ---
-        function showContextMenu(e, items) {
-            e.preventDefault();
-            contextMenu.innerHTML = '';
-            items.forEach(item => {
-                const menuItem = document.createElement('div');
-                menuItem.className = 'context-menu-item';
-                menuItem.textContent = item.label;
-                menuItem.onclick = () => {
-                    item.action();
-                    contextMenu.style.display = 'none';
-                };
-                contextMenu.appendChild(menuItem);
-            });
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${e.clientX}px`;
-            contextMenu.style.top = `${e.clientY}px`;
-        }
 
-        desktop.oncontextmenu = (e) => {
-            if (e.target !== desktop) return;
-            const desktopPath = getPathObject('/home/user/Desktop');
-            showContextMenu(e, [
-                { label: 'Neuer Ordner', action: () => {
-                    const name = prompt('Ordnername:', 'Neuer Ordner');
-                    if(name && !desktopPath[name]) {
-                        desktopPath[name] = { _type: 'dir', _name: name };
-                        saveState();
-                    }
-                }},
-                { label: 'Neue Datei', action: () => {
-                    const name = prompt('Dateiname:', 'Neue Datei.txt');
-                    if(name && !desktopPath[name]) {
-                        desktopPath[name] = { _type: 'file', _name: name, content: '' };
-                        saveState();
-                    }
-                }},
-                { label: 'Hintergrund ändern', action: () => {
-                    const url = prompt('URL des neuen Hintergrundbildes:', state.desktopWallpaper);
-                    if(url) {
-                        state.desktopWallpaper = url;
-                        desktop.style.backgroundImage = `url('${url}')`;
-                        saveState();
-                    }
-                }}
-            ]);
-        };
-        document.onclick = () => contextMenu.style.display = 'none';
+        navSlide();
 
-        // --- APP CONTENT LOADERS ---
-        function loadAppContent(appId, contentArea, win, options) {
-            if (appId === 'terminal') initTerminal(contentArea);
-            if (appId === 'files') initFilesApp(contentArea);
-            if (appId === 'editor') initEditor(contentArea, win, options);
-        }
+        const langToggle = document.getElementById('lang-toggle');
+        const html = document.documentElement;
 
-        function initEditor(contentArea, win, options) {
-             contentArea.innerHTML = `<textarea></textarea>`;
-             const textarea = contentArea.querySelector('textarea');
-             textarea.value = options.fileContent || '';
-             if (options.filePath) {
-                 win.querySelector('.title').textContent = options.fileName;
-                 textarea.oninput = () => {
-                     const dir = getPathObject(options.filePath.substring(0, options.filePath.lastIndexOf('/')));
-                     if(dir && dir[options.fileName]) {
-                        dir[options.fileName].content = textarea.value;
-                        saveState();
-                     }
-                 };
-             }
-        }
-        
-        // --- TERMINAL APP ---
-        function initTerminal(contentArea) {
-            let currentPath = '/home/user';
-            let commandHistory = [];
-            let historyIndex = -1;
-
-            contentArea.classList.add('terminal');
-            const output = document.createElement('div');
-            contentArea.appendChild(output);
-
-            const addLine = (text) => output.innerHTML += `<div>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
-            
-            const processCommand = async (cmd) => {
-                // ... logic from previous version ...
-                // plus new commands
-                if (cmd.trim()) {
-                    commandHistory.push(cmd);
-                    historyIndex = commandHistory.length;
-                }
-                output.lastChild.remove();
-                addLine(`<span class="terminal-prompt">user@web-os:${currentPath}$</span> ${cmd}`);
-                
-                let [command, ...args] = cmd.trim().split(' ');
-                if (command === 'sudo') command = args.shift();
-
-                const currentDirObj = getPathObject(currentPath);
-
-                switch(command) {
-                    case 'mkdir':
-                    case 'touch':
-                        if(!args[0]) { addLine(`Verwendung: ${command} <name>`); break; }
-                        if(currentDirObj[args[0]]) { addLine(`${command}: ${args[0]}: Existiert bereits`); break; }
-                        currentDirObj[args[0]] = { _type: (command === 'mkdir' ? 'dir' : 'file'), _name: args[0], content: '' };
-                        saveState();
-                        break;
-                    case 'rm':
-                        if(!args[0] || !currentDirObj[args[0]]) { addLine(`rm: ${args[0]}: Nicht gefunden`); break; }
-                        delete currentDirObj[args[0]];
-                        saveState();
-                        break;
-                    case 'apt':
-                        await handleApt(args, addLine);
-                        break;
-                    case 'curl':
-                        if (!state.installedPackages.has('curl')) { addLine(`curl: Befehl nicht gefunden.`); break; }
-                        if (!args[0]) { addLine('Verwendung: curl <URL>'); break; }
-                        addLine(`Daten von ${args[0]} werden abgerufen...`);
-                        try {
-                            // NOTE: This will be blocked by CORS for most websites. Use a CORS proxy for real testing.
-                            // For this demo, we'll just show it can work. Using a placeholder API.
-                            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(args[0])}`);
-                            if(!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                            const data = await response.text();
-                            addLine(data.substring(0, 2000) + (data.length > 2000 ? '\n...' : ''));
-                        } catch (error) {
-                            addLine(`curl: (23) Fehler beim Schreiben der Antwort: ${error.message}`);
-                        }
-                        break;
-                     // ... other commands like ls, cd, help, etc.
-                    default:
-                        if (cmd.trim() !== '') addLine(`${command}: Befehl nicht gefunden. Tippe 'help'`);
-                }
-                createInputLine();
-            };
-
-            const createInputLine = () => {
-                // ... same as before ...
-            };
-
-            async function handleApt(args, addLine) {
-                const [sub, pkg] = args;
-                if (sub === 'install' && pkg) {
-                    // ... installation logic ...
-                    state.installedPackages.add(pkg);
-                } else if (sub === 'remove' && pkg) {
-                    if (state.installedPackages.has(pkg)) {
-                        state.installedPackages.delete(pkg);
-                        addLine(`${pkg} erfolgreich entfernt.`);
-                    } else {
-                        addLine(`${pkg} ist nicht installiert.`);
-                    }
-                } else if (sub === 'search' && pkg) {
-                    addLine(`Suche in Repository...`);
-                    Object.keys(packageRepository).forEach(p => {
-                        if(p.includes(pkg)) addLine(`${p} - ${packageRepository[p].description}`);
-                    });
-                }
-                saveState();
+        langToggle.addEventListener('click', () => {
+            if (html.lang === 'de') {
+                html.lang = 'en';
+                html.classList.add('en');
+                langToggle.textContent = 'DE';
+            } else {
+                html.lang = 'de';
+                html.classList.remove('en');
+                langToggle.textContent = 'EN';
             }
-
-            // ... initial terminal setup ...
-        }
-
-        // --- FILES APP ---
-        function initFilesApp(contentArea) {
-            // ... same as before, but with context menu on items ...
-            const renderFiles = (directory, currentDirPath) => {
-                // ...
-                fileDiv.oncontextmenu = (e) => {
-                    showContextMenu(e, [
-                        { label: 'Umbenennen', action: () => {
-                            const newName = prompt('Neuer Name:', item._name);
-                            if(newName && newName !== item._name && !directory[newName]) {
-                                item._name = newName;
-                                directory[newName] = item;
-                                delete directory[itemName];
-                                saveState();
-                                renderFiles(directory, currentDirPath);
-                            }
-                        }},
-                        { label: 'Löschen', action: () => {
-                            if(confirm(`"${item._name}" wirklich löschen?`)) {
-                                delete directory[item._name];
-                                saveState();
-                                renderFiles(directory, currentDirPath);
-                            }
-                        }}
-                    ]);
-                };
-                // ...
-            };
-        }
-
-
-        // --- INITIALIZATION ---
-        loadState();
-        initializeDock();
-        updateDockIndicators();
-        setInterval(updateClock, 5000);
-        updateClock();
-    });
-    // NOTE: Some function bodies were truncated for brevity but their logic is described. 
-    // The user should be able to fill them in based on the previous complete examples.
-    // The provided code should be expanded with the full logic from the previous turn where applicable.
-    // E.g., the full `initTerminal`, `createInputLine`, `processCommand` switch cases.
+        });
     </script>
 </body>
 </html>

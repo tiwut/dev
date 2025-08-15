@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +36,6 @@
             padding: 20px;
         }
 
-        /* --- Header & Neon-Effekte --- */
         header {
             background: var(--dark-grey);
             border-bottom: 2px solid var(--primary-color);
@@ -109,31 +108,13 @@
             text-shadow: 0 0 10px var(--primary-color);
         }
 
-        .lang-switch button {
-            background: none;
-            border: 1px solid var(--secondary-color);
-            color: var(--secondary-color);
-            padding: 8px 15px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 5px var(--secondary-color);
-        }
-
-        .lang-switch button:hover {
-            background: var(--secondary-color);
-            color: var(--background-color);
-            box-shadow: 0 0 20px var(--secondary-color);
-        }
-
-        /* --- Hero Section --- */
         .hero {
             height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.9)), url('https://images.unsplash.com/photo-1580234811497-9df7fd2f357e?q=80&w=2067&auto=format&fit=crop') center/cover no-repeat;
+            background: linear-gradient(rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.9)), url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
             position: relative;
             padding: 0 20px;
         }
@@ -158,9 +139,10 @@
         .hero-content p {
             font-size: 1.5rem;
             color: var(--text-color);
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        /* --- Sektionen --- */
         .section {
             padding: 60px 0;
         }
@@ -187,6 +169,8 @@
             padding: 25px;
             transition: all 0.3s ease;
             box-shadow: 0 0 5px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
         }
 
         .card:hover {
@@ -200,8 +184,23 @@
             color: var(--primary-color);
             margin-bottom: 15px;
         }
+        
+        .card p {
+            flex-grow: 1;
+        }
 
-        /* --- Footer --- */
+        .card a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
         footer {
             background: var(--dark-grey);
             color: #aaa;
@@ -211,7 +210,6 @@
             border-top: 2px solid #222;
         }
         
-        /* --- Mobile Burger Menu --- */
         .burger {
             display: none;
             cursor: pointer;
@@ -225,29 +223,40 @@
             transition: all 0.3s ease;
         }
         
-        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             .nav-links {
-                position: absolute;
+                position: fixed;
                 right: 0px;
-                height: 92vh;
-                top: 8vh;
+                height: 100vh;
+                top: 0;
                 background-color: var(--dark-grey);
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                width: 50%;
+                justify-content: center;
+                width: 60%;
                 transform: translateX(100%);
                 transition: transform 0.5s ease-in;
             }
 
             .nav-links li {
                 opacity: 0;
-                margin: 20px 0;
+                margin: 25px 0;
             }
 
             .burger {
                 display: block;
+                z-index: 1001;
+            }
+            
+            .burger.toggle .line1 {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+            .burger.toggle .line2 {
+                opacity: 0;
+            }
+            .burger.toggle .line3 {
+                transform: rotate(45deg) translate(-5px, -6px);
             }
 
             .nav-active {
@@ -273,12 +282,6 @@
                 font-size: 1.2rem;
             }
         }
-        
-        /* --- Sprach-Umschaltung --- */
-        [lang="en"] { display: none; }
-        .en [lang="en"] { display: block; }
-        .en [lang="de"] { display: none; }
-
     </style>
 </head>
 <body>
@@ -288,14 +291,11 @@
             <div class="logo">DoNew</div>
             <nav>
                 <ul class="nav-links">
-                    <li><a href="#gaming" lang="de">Gaming</a><a href="#gaming" lang="en">Gaming</a></li>
-                    <li><a href="#hardware" lang="de">Hardware</a><a href="#hardware" lang-en">Hardware</a></li>
-                    <li><a href="#software" lang="de">Software</a><a href="#software" lang="en">Software</a></li>
+                    <li><a href="#gaming">Gaming</a></li>
+                    <li><a href="#hardware">Hardware</a></li>
+                    <li><a href="#software">Software</a></li>
                 </ul>
             </nav>
-            <div class="lang-switch">
-                <button id="lang-toggle">EN</button>
-            </div>
              <div class="burger">
                 <div class="line1"></div>
                 <div class="line2"></div>
@@ -307,35 +307,29 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1 lang="de">Die Zukunft des Gamings.</h1>
-                <h1 lang="en">The Future of Gaming.</h1>
-                <p lang="de">Dein Hub für ehrliche Reviews, krasse Builds und die neuste Software.</p>
-                <p lang-="en">Your hub for honest reviews, insane builds, and the latest software.</p>
+                <h1>Welcome to the Next Level.</h1>
+                <p>Your ultimate hub for unfiltered gaming, hardware, and software analysis. We cut through the noise to bring you content that matters.</p>
             </div>
         </section>
 
         <section id="gaming" class="section">
             <div class="container">
-                <h2 class="section-title" lang="de">Gaming</h2>
-                <h2 class="section-title" lang="en">Gaming</h2>
+                <h2 class="section-title">Gaming</h2>
                 <div class="grid">
                     <div class="card">
-                        <h3 lang="de">Neueste Game-Reviews</h3>
-                        <h3 lang="en">Latest Game Reviews</h3>
-                        <p lang="de">Schonungslose und detaillierte Analysen der heißesten Titel. Kein Hype, nur Fakten.</p>
-                        <p lang="en">Unfiltered and detailed analysis of the hottest titles. No hype, just facts.</p>
+                        <h3>Review: Cybernetic Dawn</h3>
+                        <p>Is the most anticipated RPG of the year a masterpiece or a digital ghost? We've spent 100+ hours in the neon-drenched world to give you the definitive verdict on its gameplay, story, and performance.</p>
+                        <a href="#">Read Full Review &rarr;</a>
                     </div>
                     <div class="card">
-                        <h3 lang="de">Gaming-Guides</h3>
-                        <h3 lang="en">Gaming Guides</h3>
-                        <p lang="de">Vom Anfänger zum Profi. Hier findest du die besten Strategien und Taktiken.</p>
-                        <p lang="en">From beginner to pro. Find the best strategies and tactics here.</p>
+                        <h3>Pro-Level Gaming Guides</h3>
+                        <p>Stop guessing and start winning. Our detailed guides cover everything from character builds in 'Ethernal Saga' to advanced recoil control patterns in 'Vanguard Strike'. Master the meta with us.</p>
+                        <a href="#">Browse All Guides &rarr;</a>
                     </div>
                     <div class="card">
-                        <h3 lang="de">Live-Streams</h3>
-                        <h3 lang="en">Live Streams</h3>
-                        <p lang="de">Verpasse keine Action! Sei live dabei, wenn wir neue Welten erkunden.</p>
-                        <p lang="en">Don't miss the action! Join us live as we explore new worlds.</p>
+                        <h3>Live Stream Schedule</h3>
+                        <p>Catch the action live! Join our community for weekly streams. This week: 'Cybernetic Dawn' hardcore playthrough on Wednesday and 'Vanguard Strike' community night on Friday. Don't miss out!</p>
+                        <a href="#">Follow on Twitch &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -343,26 +337,22 @@
 
         <section id="hardware" class="section" style="background-color: var(--dark-grey);">
             <div class="container">
-                <h2 class="section-title" lang="de">Hardware</h2>
-                <h2 class="section-title" lang="en">Hardware</h2>
+                <h2 class="section-title">Hardware</h2>
                 <div class="grid">
                     <div class="card">
-                        <h3 lang="de">PC-Builds des Monats</h3>
-                        <h3 lang="en">PC Builds of the Month</h3>
-                        <p lang="de">Extreme Leistung trifft auf atemberaubendes Design. Inspiration für dein nächstes Rig.</p>
-                        <p lang="en">Extreme performance meets stunning design. Inspiration for your next rig.</p>
+                        <h3>Build: The 'Neon Beast'</h3>
+                        <p>Our latest featured PC build packs a GeForce RTX 5080 and an Intel Core i9-15900K into a stunning chassis with custom liquid cooling. See the full component list, benchmarks, and build process.</p>
+                        <a href="#">View Build Details &rarr;</a>
                     </div>
                     <div class="card">
-                        <h3 lang="de">Komponenten-Tests</h3>
-                        <h3 lang="en">Component Reviews</h3>
-                        <p lang="de">Grafikkarten, CPUs, SSDs – Wir jagen alles durch unsere Benchmarks.</p>
-                        <p lang="en">Graphics cards, CPUs, SSDs - We put everything through our benchmarks.</p>
+                        <h3>Review: 'Quantum' GPU Series</h3>
+                        <p>The new 'Quantum' GPU line promises a 40% performance leap. We put the flagship model to the test with 4K gaming, ray tracing, and content creation benchmarks. Is it worth the upgrade?</p>
+                        <a href="#">See Benchmarks &rarr;</a>
                     </div>
                     <div class="card">
-                        <h3 lang="de">Tech-News</h3>
-                        <h3 lang="en">Tech News</h3>
-                        <p lang="de">Was gibt es Neues in der Welt der Hardware? Hier erfährst du es zuerst.</p>
-                        <p lang="en">What's new in the world of hardware? You'll hear it here first.</p>
+                        <h3>Market Watch: RAM Prices</h3>
+                        <p>DDR5 prices are finally stabilizing. We analyze the current market trends and recommend the best value-for-money kits for your next build, whether you're on a budget or aiming for peak performance.</p>
+                        <a href="#">Read Tech News &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -370,26 +360,22 @@
 
         <section id="software" class="section">
             <div class="container">
-                <h2 class="section-title" lang="de">Software</h2>
-                <h2 class="section-title" lang="en">Software</h2>
+                <h2 class="section-title">Software</h2>
                 <div class="grid">
                     <div class="card">
-                        <h3 lang="de">Must-Have Tools</h3>
-                        <h3 lang="en">Must-Have Tools</h3>
-                        <p lang="de">Diese Programme optimieren dein Gaming-Erlebnis und deine Produktivität.</p>
-                        <p lang="en">These programs will optimize your gaming experience and productivity.</p>
+                        <h3>Essential Gamer's Toolkit</h3>
+                        <p>Optimize your experience with the best free software. We cover essential tools for streaming (OBS), communication (Discord), performance monitoring (MSI Afterburner), and system cleanup.</p>
+                        <a href="#">Get the Toolkit &rarr;</a>
                     </div>
                     <div class="card">
-                        <h3 lang="de">Software-Tipps & Tricks</h3>
-                        <h3 lang="en">Software Tips & Tricks</h3>
-                        <p lang="de">Entdecke versteckte Features und hole das Maximum aus deiner Software heraus.</p>
-                        <p lang="en">Discover hidden features and get the most out of your software.</p>
+                        <h3>Pro Tip: GPU Undervolting</h3>
+                        <p>Unlock hidden performance and reduce temperatures by undervolting your GPU. Our step-by-step guide makes it safe and easy, giving you a cooler, quieter, and often faster gaming rig for free.</p>
+                        <a href="#">Learn How &rarr;</a>
                     </div>
                      <div class="card">
-                        <h3 lang="de">Sicherheits-Updates</h3>
-                        <h3 lang="en">Security Updates</h3>
-                        <p lang="de">Bleib geschützt. Wir informieren dich über wichtige Updates und Bedrohungen.</p>
-                        <p lang="en">Stay protected. We inform you about important updates and threats.</p>
+                        <h3>Security Alert: Driver Scams</h3>
+                        <p>A new wave of phishing scams is targeting gamers through fake driver update websites. We show you how to identify these threats and ensure you only download official, secure software for your hardware.</p>
+                        <a href="#">Stay Protected &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -398,8 +384,7 @@
 
     <footer>
         <div class="container">
-            <p lang="de">&copy; 2025 DoNew. Alle Rechte vorbehalten.</p>
-            <p lang="en">&copy; 2025 DoNew. All rights reserved.</p>
+            <p>&copy; 2025 DoNew. All rights reserved.</p>
         </div>
     </footer>
 
@@ -410,10 +395,9 @@
             const navLinks = document.querySelectorAll('.nav-links li');
 
             burger.addEventListener('click', () => {
-                // Toggle Nav
                 nav.classList.toggle('nav-active');
+                burger.classList.toggle('toggle');
 
-                // Animate Links
                 navLinks.forEach((link, index) => {
                     if (link.style.animation) {
                         link.style.animation = '';
@@ -425,21 +409,6 @@
         }
 
         navSlide();
-
-        const langToggle = document.getElementById('lang-toggle');
-        const html = document.documentElement;
-
-        langToggle.addEventListener('click', () => {
-            if (html.lang === 'de') {
-                html.lang = 'en';
-                html.classList.add('en');
-                langToggle.textContent = 'DE';
-            } else {
-                html.lang = 'de';
-                html.classList.remove('en');
-                langToggle.textContent = 'EN';
-            }
-        });
     </script>
 </body>
 </html>
